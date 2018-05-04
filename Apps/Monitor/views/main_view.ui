@@ -222,7 +222,7 @@
           </layout>
          </item>
          <item>
-          <widget class="QPushButton" name="add_pair_button">
+          <widget class="QPushButton" name="add_button">
            <property name="minimumSize">
             <size>
              <width>91</width>
@@ -241,7 +241,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="remove_pair_button">
+          <widget class="QPushButton" name="del_button">
            <property name="maximumSize">
             <size>
              <width>91</width>
@@ -250,6 +250,45 @@
            </property>
            <property name="text">
             <string>删除</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="start_button">
+           <property name="maximumSize">
+            <size>
+             <width>91</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>开始</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="stop_button">
+           <property name="maximumSize">
+            <size>
+             <width>91</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>停止</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="clear_button">
+           <property name="maximumSize">
+            <size>
+             <width>91</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>清除日志</string>
            </property>
           </widget>
          </item>
@@ -1180,8 +1219,11 @@ p, li { white-space: pre-wrap; }
  </widget>
  <tabstops>
   <tabstop>pair_combobox</tabstop>
-  <tabstop>add_pair_button</tabstop>
-  <tabstop>remove_pair_button</tabstop>
+  <tabstop>add_button</tabstop>
+  <tabstop>del_button</tabstop>
+  <tabstop>start_button</tabstop>
+  <tabstop>stop_button</tabstop>
+  <tabstop>clear_button</tabstop>
   <tabstop>coin_statistics_type_combobox</tabstop>
   <tabstop>log_edit</tabstop>
  </tabstops>
