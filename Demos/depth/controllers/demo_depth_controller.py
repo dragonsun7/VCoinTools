@@ -94,6 +94,7 @@ class MainController:
 
     def on_pair_combobox_changed(self, index):
         self.current_pair = self.ui.pair_combobox.itemText(index)
+        self.ui.pair_label.setText(self.current_pair)
         self.on_ticker(self.current_pair)
         self.on_depth(self.current_pair)
 
