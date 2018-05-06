@@ -25,12 +25,6 @@
         <layout class="QGridLayout" name="gridLayout">
          <item row="0" column="0">
           <widget class="QLabel" name="label_6">
-           <property name="font">
-            <font>
-             <weight>75</weight>
-             <bold>true</bold>
-            </font>
-           </property>
            <property name="text">
             <string>盈亏(%)</string>
            </property>
@@ -41,12 +35,6 @@
          </item>
          <item row="0" column="1">
           <widget class="QLabel" name="label_5">
-           <property name="font">
-            <font>
-             <weight>75</weight>
-             <bold>true</bold>
-            </font>
-           </property>
            <property name="text">
             <string>盈亏</string>
            </property>
@@ -57,12 +45,6 @@
          </item>
          <item row="0" column="2">
           <widget class="QLabel" name="label_2">
-           <property name="font">
-            <font>
-             <weight>75</weight>
-             <bold>true</bold>
-            </font>
-           </property>
            <property name="text">
             <string>仓位(%)</string>
            </property>
@@ -73,12 +55,6 @@
          </item>
          <item row="0" column="3">
           <widget class="QLabel" name="label">
-           <property name="font">
-            <font>
-             <weight>75</weight>
-             <bold>true</bold>
-            </font>
-           </property>
            <property name="text">
             <string>仓位</string>
            </property>
@@ -89,12 +65,6 @@
          </item>
          <item row="0" column="4">
           <widget class="QLabel" name="label_4">
-           <property name="font">
-            <font>
-             <weight>75</weight>
-             <bold>true</bold>
-            </font>
-           </property>
            <property name="text">
             <string>当前结算</string>
            </property>
@@ -105,14 +75,8 @@
          </item>
          <item row="0" column="5">
           <widget class="QLabel" name="label_3">
-           <property name="font">
-            <font>
-             <weight>75</weight>
-             <bold>true</bold>
-            </font>
-           </property>
            <property name="text">
-            <string>初始金额</string>
+            <string>期初余额</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -153,6 +117,12 @@
          </item>
          <item row="1" column="2">
           <widget class="QLabel" name="total_position_percent_label">
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
            <property name="text">
             <string>12.45</string>
            </property>
@@ -162,7 +132,13 @@
           </widget>
          </item>
          <item row="1" column="3">
-          <widget class="QLabel" name="total_postion_usdt_label">
+          <widget class="QLabel" name="total_position_usdt_label">
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
            <property name="text">
             <string>13234.23</string>
            </property>
@@ -173,6 +149,12 @@
          </item>
          <item row="1" column="4">
           <widget class="QLabel" name="total_settle_label">
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
            <property name="text">
             <string>23424.23</string>
            </property>
@@ -183,6 +165,12 @@
          </item>
          <item row="1" column="5">
           <widget class="QLabel" name="init_balance_label">
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
            <property name="text">
             <string>23123.34</string>
            </property>
@@ -217,7 +205,11 @@
             </widget>
            </item>
            <item row="0" column="1">
-            <widget class="QComboBox" name="pair_combobox"/>
+            <widget class="QComboBox" name="pair_combobox">
+             <property name="editable">
+              <bool>true</bool>
+             </property>
+            </widget>
            </item>
           </layout>
          </item>
@@ -298,12 +290,6 @@
         <layout class="QGridLayout" name="gridLayout_2">
          <item row="0" column="0">
           <widget class="QLabel" name="label_22">
-           <property name="font">
-            <font>
-             <weight>75</weight>
-             <bold>true</bold>
-            </font>
-           </property>
            <property name="text">
             <string>盈亏(%)</string>
            </property>
@@ -314,12 +300,6 @@
          </item>
          <item row="0" column="1">
           <widget class="QLabel" name="label_23">
-           <property name="font">
-            <font>
-             <weight>75</weight>
-             <bold>true</bold>
-            </font>
-           </property>
            <property name="text">
             <string>盈亏</string>
            </property>
@@ -330,12 +310,6 @@
          </item>
          <item row="0" column="2">
           <widget class="QLabel" name="label_14">
-           <property name="font">
-            <font>
-             <weight>75</weight>
-             <bold>true</bold>
-            </font>
-           </property>
            <property name="text">
             <string>持仓量</string>
            </property>
@@ -346,12 +320,6 @@
          </item>
          <item row="0" column="3">
           <widget class="QLabel" name="label_15">
-           <property name="font">
-            <font>
-             <weight>75</weight>
-             <bold>true</bold>
-            </font>
-           </property>
            <property name="text">
             <string>持仓金额</string>
            </property>
@@ -362,12 +330,6 @@
          </item>
          <item row="0" column="4">
           <widget class="QLabel" name="label_18">
-           <property name="font">
-            <font>
-             <weight>75</weight>
-             <bold>true</bold>
-            </font>
-           </property>
            <property name="text">
             <string>均价</string>
            </property>
@@ -378,12 +340,6 @@
          </item>
          <item row="0" column="5">
           <widget class="QLabel" name="label_19">
-           <property name="font">
-            <font>
-             <weight>75</weight>
-             <bold>true</bold>
-            </font>
-           </property>
            <property name="text">
             <string>止损价</string>
            </property>
@@ -394,6 +350,12 @@
          </item>
          <item row="1" column="0">
           <widget class="QLabel" name="coin_profit_percent_label">
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
            <property name="styleSheet">
             <string notr="true">color: rgb(16, 128, 64);</string>
            </property>
@@ -407,6 +369,12 @@
          </item>
          <item row="1" column="1">
           <widget class="QLabel" name="coin_profit_usdt_label">
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
            <property name="styleSheet">
             <string notr="true">color: rgb(16, 128, 64);</string>
            </property>
@@ -420,6 +388,12 @@
          </item>
          <item row="1" column="2">
           <widget class="QLabel" name="coin_position_amount_label">
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
            <property name="text">
             <string>12.45</string>
            </property>
@@ -430,6 +404,12 @@
          </item>
          <item row="1" column="3">
           <widget class="QLabel" name="coin_position_usdt_label">
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
            <property name="text">
             <string>13234.23</string>
            </property>
@@ -439,7 +419,13 @@
           </widget>
          </item>
          <item row="1" column="4">
-          <widget class="QLabel" name="coin_average_label">
+          <widget class="QLabel" name="coin_avg_label">
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
            <property name="text">
             <string>12.45</string>
            </property>
@@ -450,6 +436,12 @@
          </item>
          <item row="1" column="5">
           <widget class="QLabel" name="coin_stop_loss_label">
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
            <property name="text">
             <string>13234.23</string>
            </property>
@@ -470,6 +462,12 @@
            <layout class="QGridLayout" name="gridLayout_4">
             <item row="3" column="4">
              <widget class="QLabel" name="coin_vol_label">
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
               <property name="text">
                <string>12.45</string>
               </property>
@@ -480,6 +478,12 @@
             </item>
             <item row="3" column="3">
              <widget class="QLabel" name="coin_highest_label">
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
               <property name="text">
                <string>13234.23</string>
               </property>
@@ -490,12 +494,6 @@
             </item>
             <item row="2" column="1">
              <widget class="QLabel" name="label_82">
-              <property name="font">
-               <font>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
               <property name="text">
                <string>收盘价(最新价)</string>
               </property>
@@ -506,12 +504,6 @@
             </item>
             <item row="2" column="4">
              <widget class="QLabel" name="label_85">
-              <property name="font">
-               <font>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
               <property name="text">
                <string>成交量</string>
               </property>
@@ -522,6 +514,12 @@
             </item>
             <item row="3" column="0">
              <widget class="QLabel" name="coin_open_label">
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
               <property name="text">
                <string>1.7109</string>
               </property>
@@ -532,6 +530,12 @@
             </item>
             <item row="3" column="1">
              <widget class="QLabel" name="coin_close_label">
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
               <property name="text">
                <string>1.6432</string>
               </property>
@@ -542,12 +546,6 @@
             </item>
             <item row="2" column="3">
              <widget class="QLabel" name="label_84">
-              <property name="font">
-               <font>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
               <property name="text">
                <string>最高价</string>
               </property>
@@ -558,12 +556,6 @@
             </item>
             <item row="2" column="2">
              <widget class="QLabel" name="label_83">
-              <property name="font">
-               <font>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
               <property name="text">
                <string>最低价</string>
               </property>
@@ -574,6 +566,12 @@
             </item>
             <item row="1" column="2">
              <widget class="QLabel" name="coin_avg_diff_usdt_label">
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
               <property name="text">
                <string>123.23</string>
               </property>
@@ -584,6 +582,12 @@
             </item>
             <item row="1" column="3">
              <widget class="QLabel" name="coin_open_diff_percent_label">
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
               <property name="text">
                <string>23.12</string>
               </property>
@@ -594,12 +598,6 @@
             </item>
             <item row="0" column="3">
              <widget class="QLabel" name="label_74">
-              <property name="font">
-               <font>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
               <property name="text">
                <string>开盘价差(%)</string>
               </property>
@@ -610,6 +608,12 @@
             </item>
             <item row="1" column="4">
              <widget class="QLabel" name="coin_open_diff_usdt_label">
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
               <property name="text">
                <string>231</string>
               </property>
@@ -620,12 +624,6 @@
             </item>
             <item row="0" column="2">
              <widget class="QLabel" name="label_73">
-              <property name="font">
-               <font>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
               <property name="text">
                <string>均价价差</string>
               </property>
@@ -636,12 +634,6 @@
             </item>
             <item row="0" column="0">
              <widget class="QLabel" name="label_71">
-              <property name="font">
-               <font>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
               <property name="text">
                <string>最新价格</string>
               </property>
@@ -652,12 +644,6 @@
             </item>
             <item row="2" column="0">
              <widget class="QLabel" name="label_81">
-              <property name="font">
-               <font>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
               <property name="text">
                <string>开盘价</string>
               </property>
@@ -668,12 +654,6 @@
             </item>
             <item row="0" column="4">
              <widget class="QLabel" name="label_75">
-              <property name="font">
-               <font>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
               <property name="text">
                <string>开盘价差</string>
               </property>
@@ -683,7 +663,13 @@
              </widget>
             </item>
             <item row="1" column="0">
-             <widget class="QLabel" name="coin_ticker_price_label">
+             <widget class="QLabel" name="coin_last_label">
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
               <property name="text">
                <string>1.9873</string>
               </property>
@@ -694,6 +680,12 @@
             </item>
             <item row="1" column="1">
              <widget class="QLabel" name="coin_avg_diff_percent_label">
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
               <property name="text">
                <string>2.32</string>
               </property>
@@ -704,12 +696,6 @@
             </item>
             <item row="0" column="1">
              <widget class="QLabel" name="label_72">
-              <property name="font">
-               <font>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
               <property name="text">
                <string>均价价差(%)</string>
               </property>
@@ -720,6 +706,12 @@
             </item>
             <item row="3" column="2">
              <widget class="QLabel" name="coin_lowest_label">
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
               <property name="text">
                <string>12.45</string>
               </property>
@@ -743,6 +735,12 @@
            <layout class="QGridLayout" name="gridLayout_3">
             <item row="5" column="3">
              <widget class="QLabel" name="coin_buy_vol_big_label">
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
               <property name="styleSheet">
                <string notr="true">color: rgb(16, 128, 64);</string>
               </property>
@@ -756,6 +754,12 @@
             </item>
             <item row="5" column="4">
              <widget class="QLabel" name="coin_sell_vol_big_label">
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
               <property name="styleSheet">
                <string notr="true">color: rgb(252, 1, 7);</string>
               </property>
@@ -783,18 +787,88 @@
                </widget>
               </item>
               <item row="0" column="1">
-               <widget class="QComboBox" name="coin_statistics_type_combobox"/>
+               <widget class="QComboBox" name="coin_period_combobox">
+                <item>
+                 <property name="text">
+                  <string>最近1分钟</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>最近3分钟</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>最近5分钟</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>最近15分钟</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>最近30分钟</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>最近1小时</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>最近2小时</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>最近4小时</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>最近6小时</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>最近12小时</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>最近1天</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>最近1周</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>今天</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>本周</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>本月</string>
+                 </property>
+                </item>
+               </widget>
               </item>
              </layout>
             </item>
             <item row="0" column="2">
              <widget class="QLabel" name="label_57">
-              <property name="font">
-               <font>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
               <property name="text">
                <string>流入资金</string>
               </property>
@@ -805,12 +879,6 @@
             </item>
             <item row="0" column="3">
              <widget class="QLabel" name="label_59">
-              <property name="font">
-               <font>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
               <property name="text">
                <string>流出资金</string>
               </property>
@@ -821,12 +889,6 @@
             </item>
             <item row="0" column="4">
              <widget class="QLabel" name="label_61">
-              <property name="font">
-               <font>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
               <property name="text">
                <string>净流入</string>
               </property>
@@ -836,7 +898,13 @@
              </widget>
             </item>
             <item row="1" column="2">
-             <widget class="QLabel" name="coin_statistics_inflow_label">
+             <widget class="QLabel" name="coin_inflow_label">
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
               <property name="styleSheet">
                <string notr="true">color: rgb(16, 128, 64);</string>
               </property>
@@ -849,7 +917,13 @@
              </widget>
             </item>
             <item row="1" column="3">
-             <widget class="QLabel" name="coin_statistics_outflow_label">
+             <widget class="QLabel" name="coin_outflow_label">
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
               <property name="styleSheet">
                <string notr="true">color: rgb(252, 1, 7);</string>
               </property>
@@ -862,7 +936,13 @@
              </widget>
             </item>
             <item row="1" column="4">
-             <widget class="QLabel" name="coin_statistics_net_inflow_label">
+             <widget class="QLabel" name="coin_net_inflow_label">
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
               <property name="styleSheet">
                <string notr="true">color: rgb(16, 128, 64);</string>
               </property>
@@ -876,14 +956,8 @@
             </item>
             <item row="2" column="0">
              <widget class="QLabel" name="label_42">
-              <property name="font">
-               <font>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
               <property name="text">
-               <string>成交笔数</string>
+               <string>成交笔数1</string>
               </property>
               <property name="alignment">
                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -892,12 +966,6 @@
             </item>
             <item row="2" column="1">
              <widget class="QLabel" name="label_43">
-              <property name="font">
-               <font>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
               <property name="text">
                <string>买单笔数</string>
               </property>
@@ -908,12 +976,6 @@
             </item>
             <item row="2" column="2">
              <widget class="QLabel" name="label_38">
-              <property name="font">
-               <font>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
               <property name="text">
                <string>卖单笔数</string>
               </property>
@@ -924,12 +986,6 @@
             </item>
             <item row="2" column="3">
              <widget class="QLabel" name="label_37">
-              <property name="font">
-               <font>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
               <property name="text">
                <string>买单量</string>
               </property>
@@ -940,12 +996,6 @@
             </item>
             <item row="2" column="4">
              <widget class="QLabel" name="label_41">
-              <property name="font">
-               <font>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
               <property name="text">
                <string>卖单量</string>
               </property>
@@ -956,6 +1006,12 @@
             </item>
             <item row="3" column="0">
              <widget class="QLabel" name="coin_trade_count_label">
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
               <property name="text">
                <string>23</string>
               </property>
@@ -966,6 +1022,12 @@
             </item>
             <item row="3" column="1">
              <widget class="QLabel" name="coin_buy_count_label">
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
               <property name="styleSheet">
                <string notr="true">color: rgb(16, 128, 64);</string>
               </property>
@@ -979,6 +1041,12 @@
             </item>
             <item row="3" column="2">
              <widget class="QLabel" name="coin_sell_count_label">
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
               <property name="styleSheet">
                <string notr="true">color: rgb(252, 1, 7);</string>
               </property>
@@ -992,6 +1060,12 @@
             </item>
             <item row="3" column="3">
              <widget class="QLabel" name="coin_buy_vol_label">
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
               <property name="styleSheet">
                <string notr="true">color: rgb(16, 128, 64);</string>
               </property>
@@ -1005,6 +1079,12 @@
             </item>
             <item row="3" column="4">
              <widget class="QLabel" name="coin_sell_vol_label">
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
               <property name="styleSheet">
                <string notr="true">color: rgb(252, 1, 7);</string>
               </property>
@@ -1018,12 +1098,6 @@
             </item>
             <item row="4" column="0">
              <widget class="QLabel" name="label_52">
-              <property name="font">
-               <font>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
               <property name="text">
                <string>大单笔数</string>
               </property>
@@ -1034,12 +1108,6 @@
             </item>
             <item row="4" column="1">
              <widget class="QLabel" name="label_53">
-              <property name="font">
-               <font>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
               <property name="text">
                <string>大买单笔数</string>
               </property>
@@ -1050,12 +1118,6 @@
             </item>
             <item row="4" column="2">
              <widget class="QLabel" name="label_48">
-              <property name="font">
-               <font>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
               <property name="text">
                <string>大卖单笔数</string>
               </property>
@@ -1066,12 +1128,6 @@
             </item>
             <item row="4" column="3">
              <widget class="QLabel" name="label_47">
-              <property name="font">
-               <font>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
               <property name="text">
                <string>大笔买单量</string>
               </property>
@@ -1082,12 +1138,6 @@
             </item>
             <item row="4" column="4">
              <widget class="QLabel" name="label_51">
-              <property name="font">
-               <font>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
               <property name="text">
                <string>大笔卖单量</string>
               </property>
@@ -1098,6 +1148,12 @@
             </item>
             <item row="5" column="0">
              <widget class="QLabel" name="coin_trade_count_big_label">
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
               <property name="text">
                <string>12</string>
               </property>
@@ -1108,6 +1164,12 @@
             </item>
             <item row="5" column="1">
              <widget class="QLabel" name="coin_buy_count_big_label">
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
               <property name="styleSheet">
                <string notr="true">color: rgb(16, 128, 64);</string>
               </property>
@@ -1121,6 +1183,12 @@
             </item>
             <item row="5" column="2">
              <widget class="QLabel" name="coin_sell_count_big_label">
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
               <property name="styleSheet">
                <string notr="true">color: rgb(252, 1, 7);</string>
               </property>
@@ -1133,7 +1201,7 @@
              </widget>
             </item>
             <item row="1" column="0" colspan="2">
-             <widget class="QLabel" name="coin_statistics_time_label">
+             <widget class="QLabel" name="coin_time_label">
               <property name="text">
                <string>2018-04-23 23:00:00 —— 现在</string>
               </property>
@@ -1154,15 +1222,7 @@
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
-        <widget class="QTextEdit" name="log_edit">
-         <property name="html">
-          <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'.SF NS Text'; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-        </widget>
+        <widget class="QPlainTextEdit" name="log_edit"/>
        </item>
       </layout>
      </widget>
@@ -1224,8 +1284,7 @@ p, li { white-space: pre-wrap; }
   <tabstop>start_button</tabstop>
   <tabstop>stop_button</tabstop>
   <tabstop>clear_button</tabstop>
-  <tabstop>coin_statistics_type_combobox</tabstop>
-  <tabstop>log_edit</tabstop>
+  <tabstop>coin_period_combobox</tabstop>
  </tabstops>
  <resources/>
  <connections/>

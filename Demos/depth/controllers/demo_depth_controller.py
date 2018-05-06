@@ -7,17 +7,15 @@ import datetime
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 
-import Demos.depth.conf.demo_depth_conf as config
-from Demos.depth.views.demo_depth_view_main import *
+import conf as config
 from Common.models.okex_model import *
 from Common.exchanges.okex_exchange import *
+from Demos.depth.views.demo_depth_view_main import *
 
 
 class MainController:
 
     def __init__(self):
-        self.current_pair = ''
-
         # 创建模型对象
         self.model = OKExModel(
             exchange_symbol=config.exchange['symbol'],
@@ -62,7 +60,6 @@ class MainController:
         bids_header_view: QHeaderView = self.ui.bids_table.horizontalHeader()
         bids_header_view.setSectionsClickable(False)
         self.ui.pair_combobox.addItems(self.model.pairs)
-        self.on_pair_combobox_changed(self.ui.pair_combobox.currentIndex())
 
         # connect slot
         self.ui.pair_combobox.currentIndexChanged.connect(self.on_pair_combobox_changed)
@@ -72,8 +69,10 @@ class MainController:
         self.ui.stop_button.clicked.connect(self.on_stop_button_click)
         self.ui.clear_log_button.clicked.connect(self.on_clear_log_button_click)
 
-        # 初始化属性
+        # 初始化相关数据
+        self.current_pair = ''  # 当前交易对
         self.is_websocket_connected = False
+        self.on_pair_combobox_changed(self.ui.pair_combobox.currentIndex())
 
     def show(self):
         self.main_window.show()

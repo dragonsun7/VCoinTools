@@ -1,14 +1,10 @@
 # -*- coding: utf-8 -*-
 __author__ = 'Dragon Sun'
 
-
-import re
 import json
 import hashlib
-
 from Common.exchanges.websocket_exchange import *
 from Common.models.base_model import *
-
 
 # Websocket订阅频道类型
 WS_CHANNEL_TYPE_TICKER = 0  # 行情
@@ -18,37 +14,16 @@ WS_CHANNEL_TYPE_ORDER = 3  # 订单
 WS_CHANNEL_TYPE_BALANCE = 4  # 余额
 WS_CHANNEL_TYPE_KLINE = 5  # K线
 
-# K线类型
-KLINE_TYPE_MIN01 = 0
-KLINE_TYPE_MIN03 = 1
-KLINE_TYPE_MIN05 = 2
-KLINE_TYPE_MIN15 = 3
-KLINE_TYPE_MIN30 = 4
-KLINE_TYPE_HOUR01 = 5
-KLINE_TYPE_HOUR02 = 6
-KLINE_TYPE_HOUR04 = 7
-KLINE_TYPE_HOUR06 = 8
-KLINE_TYPE_HOUR12 = 9
-KLINE_TYPE_DAY = 10
-KLINE_TYPE_WEEK = 11
-
-# 交易方向
-TRADE_SIDE_BUY = 1
-TRADE_SIDE_SELL = 2
-
-# 订单状态
-ORDER_RECALL = -1  # 撤销
-ORDER_OPEN = 0  # 未成交
-ORDER_PART = 1  # 部分成交
-ORDER_CLOSE = 2  # 已成交
-
 
 class OKExWebsocketExchange(WebsocketExchange):
-
     on_subscribe_signal = QtCore.pyqtSignal(str)  # 交易对订阅成功，参数为交易对
     on_all_subscribe_signal = QtCore.pyqtSignal()  # 所有交易对订阅成功
     on_ticker_signal = QtCore.pyqtSignal(str)  # 市场行情数据更新，参数为交易对
     on_depth_signal = QtCore.pyqtSignal(str)  # 市场深度数据更新，参数为交易对
+    on_deals_signal = QtCore.pyqtSignal(str)  # 交易记录数据更新，参数为交易对
+    on_order_signal = QtCore.pyqtSignal(str)  # 订单信息数据更新，参数为交易对
+    on_balance_signal = QtCore.pyqtSignal()  # 余额数据更新
+    on_kline_signal = QtCore.pyqtSignal(str, int)  # K线数据更新，参数：交易对、K线类型
 
     def __init__(self, model: BaseModel, url, proxy_host=None, proxy_port=None, ping_interval=10, ping_timeout=5):
         WebsocketExchange.__init__(self, model.api_key, model.secret_key,
@@ -179,7 +154,7 @@ class OKExWebsocketExchange(WebsocketExchange):
         :return: (str) OKEx对应的频道类型
         """
         owns = ['ticker', 'depth', 'deals', 'order', 'balance', 'kline']
-        assert ((standard_channel_type >=0) and (standard_channel_type < len(owns))), 'standard_channel_type超出范围值'
+        assert ((standard_channel_type >= 0) and (standard_channel_type < len(owns))), 'standard_channel_type超出范围值'
         return owns[standard_channel_type]
 
     # noinspection PyMethodMayBeStatic
@@ -387,13 +362,16 @@ class OKExWebsocketExchange(WebsocketExchange):
         self.on_depth_signal.emit(pair)
 
     def _ws_received_deals(self, pair, data):
-        pass
+        self.model.save_deals(pair, data)
+        self.on_deals_signal.emit(pair)
 
     def _ws_received_order(self, pair, data):
-        pass
+        self.model.save_order(pair, data)
+        self.on_order_signal.emit(pair)
 
     def _ws_received_balance(self, pair, data):
-        pass
+        self.model.save_balance(data)
+        self.on_balance_signal.emit()
 
     def _ws_received_kline(self, pair, kline_type, data):
-        pass
+        self.model.save_kline(pair, kline_type, data)

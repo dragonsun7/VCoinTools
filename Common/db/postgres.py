@@ -19,29 +19,45 @@ def init_singleton(host, port, user, password, database):
         _cursor = _conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
 
+def _create_cursor():
+    global _conn
+    return _conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+
+
 def get_one(sql, params=None):
-    _cursor.execute(sql, params)
-    return _cursor.fetchone()
+    cursor = _create_cursor()
+    cursor.execute(sql, params)
+    ret = cursor.fetchone()
+    cursor.close()
+    return ret
 
 
 def get_all(sql, params=None):
-    _cursor.execute(sql, params)
-    return _cursor.fetchall()
+    cursor = _create_cursor()
+    cursor.execute(sql, params)
+    ret = cursor.fetchall()
+    cursor.close()
+    return ret
 
 
 def execute(sql, params=None):
-    _cursor.execute(sql, params)
+    global _conn
+    cursor = _create_cursor()
+    cursor.execute(sql, params)
     _conn.commit()
 
 
 # 批量执行
 #   command 是一个list，里面的每一个元素是一个字典，代表着一条SQL命令
 #   字典的格式为：{'sql': 'sql语句', 'params': (参数列表)}
-def batch_execute(cmds):
-    for cmd in cmds:
+def batch_execute(commands):
+    global _conn
+    cursor = _create_cursor()
+    for cmd in commands:
         sql = cmd['sql']
         params = cmd['params']
-        _cursor.execute(sql, params)
+        cursor.execute(sql, params)
+    cursor.close()
     _conn.commit()
 
 
