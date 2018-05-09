@@ -6,6 +6,8 @@ from Common.exchanges.okex_websocket_exchange import *
 
 class OKExExchange(OKExWebsocketExchange):
 
+    order_history_signal = QtCore.pyqtSignal(str)  # 获取用户历史订单信息成功，参数为交易对
+
     # ---------------------------------------- 重载方法 ---------------------------------------- #
     def __init__(self, model,
                  websocket_url=None, proxy_host=None, proxy_port=None, ping_interval=10, ping_timeout=5):
@@ -14,6 +16,8 @@ class OKExExchange(OKExWebsocketExchange):
 
     def symbol(self):
         return 'OKEx'
+
+    # ---------------------------------------- REST方法 ---------------------------------------- #
 
     def get_depth(self, pair):
         url = 'https://www.okex.com/api/v1/depth.do'
@@ -50,8 +54,6 @@ class OKExExchange(OKExWebsocketExchange):
         params['sign'] = self._build_sign(params)
         json_obj = self.request(HTTP_METHOD_POST, url, params)
         return json_obj['result']
-
-    # ---------------------------------------- REST方法 ---------------------------------------- #
 
     def batch_place_order(self, trade_infos):
         # TODO 测试
@@ -93,35 +95,70 @@ class OKExExchange(OKExWebsocketExchange):
         json_obj = self.request(HTTP_METHOD_POST, url, params)
         return json_obj['success'], json_obj['error']
 
-    # ---------------------------------------- Websocket基本方法 -------------------------------- #
-
-    def _ws_proc_depth_message(self, asks, bids, data):
-        # TODO
+    def get_order_history(self, pair, page=1):
         """
-        处理订阅的市场深度数据
-        :param asks: 现有的asks数据
-        :param bids: 现有的bids数据
-        :param data: dict,收到的市场深度数据，里面包含'asks'和'bids'两个list
-        :return: 处理后的asks和bids
+        获取历史订单信息，只返回最近两天的信息
+        :param pair: (str) 交易对
+        :param page: (int) 页数
+        :return: (bool) 是否执行成功
         """
-        ask_list = []
-        bid_list = []
-        if 'asks' in data.keys():
-            for ask in data['asks']:
-                ask_list.append([float(ask[0]), float(ask[1])])
-        if 'bids' in data.keys():
-            for bid in data['bids']:
-                bid_list.append([float(bid[0]), float(bid[1])])
+        page_length = 200
+        url = 'https://www.okex.com/api/v1/order_history.do'
+        params = {
+            'api_key': self.api_key,
+            'symbol': pair.lower(),
+            'status': 1,
+            'current_page': page,
+            'page_length': page_length
+        }
+        params['sign'] = self._build_sign(params)
+        json_obj = self.request(HTTP_METHOD_POST, url, params)
+        result = json_obj['result']
+        if not result:
+            return False
 
-        if len(asks) > 0:  # 不是第一次收到asks数据
-            self._ws_do_depth_data(asks, ask_list)
-        if len(bids) > 0:  # 不是第一次收到bids数据
-            self._ws_do_depth_data(bids, bid_list)
+        # 保存订单
+        orders = json_obj['orders']
+        for order in orders:
+            order_id = order['order_id']
+            order_type = TRADE_SIDE_BUY if order['type'] == 'buy' else TRADE_SIDE_SELL
+            amount = order['deal_amount']
+            price = order['avg_price']
+            total = price * amount
+            ts = datetime.datetime.fromtimestamp(int(order['create_date']) / 1000)
+            self.model.save_order(pair, order_id, order_type, amount, price, total, ts)
 
-        ask_list = sorted(ask_list, reverse=False)
-        bid_list = sorted(bid_list, reverse=True)
+        # 是否还有更多的数据
+        total = json_obj['total']
+        if page_length * page < total:
+            return self.get_order_history(pair, page + 1)
+        else:
+            return True
 
-        return ask_list, bid_list
+    def update_balance(self):
+        """
+        获取用户余额信息
+        :return: (bool) 是否成功
+        """
+        url = 'https://www.okex.com/api/v1/userinfo.do'
+        params = {
+            'api_key': self.api_key
+        }
+        params['sign'] = self._build_sign(params)
+        json_obj = self.request(HTTP_METHOD_POST, url, params)
+        result = json_obj['result']
+        if not result:
+            return False
+
+        info_dict = json_obj['info']
+        funds_dict = info_dict['funds']
+        free_dict = funds_dict['free']
+        freezed_dict = funds_dict['freezed']
+        for curr in free_dict.keys():
+            free = float(free_dict[curr])
+            freezed = float(freezed_dict[curr])
+            self.model.save_balance(curr.upper(), free, freezed)
+        return True
 
     # ---------------------------------------- 私有方法 ---------------------------------------- #
 

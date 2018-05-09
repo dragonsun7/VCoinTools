@@ -8,7 +8,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 
 import conf as config
-from Common.models.okex_model import *
+from Common.models.monitor_model import *
 from Common.exchanges.okex_exchange import *
 from Demos.depth.views.demo_depth_view_main import *
 
@@ -17,7 +17,7 @@ class MainController:
 
     def __init__(self):
         # 创建模型对象
-        self.model = OKExModel(
+        self.model = MonitorModel(
             exchange_symbol=config.exchange['symbol'],
             exchange_username=config.exchange['username'],
             db_host=config.database['host'],

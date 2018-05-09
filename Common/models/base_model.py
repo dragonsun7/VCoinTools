@@ -11,23 +11,24 @@ from Common.libs.utils import *
 class BaseModel:
 
     def __init__(self, exchange_symbol, exchange_username, db_host, db_port, db_user, db_password, db_database):
-        self.exchange_symbol = exchange_symbol
-        self.exchange_username = exchange_username
-        self.user_id = None  # user id
-        self.exchange_id = None  # exchange id
-        self.api_key = None  # api key
-        self.secret_key = None  # secret key
+        # 交易行情字典
+        # {'high': '2.071', 'vol': '73368512.1865', 'last': '2.0251', 'low': '1.8706', 'buy': '2.0245',
+        #  'change': '0.1114', 'sell': '2.0255', 'dayLow': '1.8706', 'close': '2.0251', 'dayHigh': '2.071',
+        #  'open': '1.9137', 'timestamp': 1525342359947}
+
+        self.exchange_symbol = exchange_symbol  # 交易所符号
+        self.exchange_username = exchange_username  # 用户名
+        self.exchange_id = None  # 交易所ID
+        self.user_id = None  # 用户ID
+        self.api_key = None  # API Key
+        self.secret_key = None  # Secret Key
         self.buy_fee = None  # 买单手续费比率
         self.sell_fee = None  # 卖单手续费比率
         self.pairs = []  # 交易对列表
         self.pairs_id = {}  # 交易对ID
         self.decimals = {}  # 交易对价格小数位数
-        self.asks = {}  # bids
-        self.bids = {}  # asks
-
-        # {'high': '2.071', 'vol': '73368512.1865', 'last': '2.0251', 'low': '1.8706', 'buy': '2.0245',
-        #  'change': '0.1114', 'sell': '2.0255', 'dayLow': '1.8706', 'close': '2.0251', 'dayHigh': '2.071',
-        #  'open': '1.9137', 'timestamp': 1525342359947}
+        self.asks = {}  # 市场深度——bids
+        self.bids = {}  # 市场深度——asks
         self.tickers = {}  # 交易行情
 
         # 初始化数据库
@@ -38,6 +39,16 @@ class BaseModel:
         self._get_pairs_info()
 
     # ------------------------------ 方法 ------------------------------ #
+
+    # noinspection PyMethodMayBeStatic
+    def split_pair(self, pair):
+        """
+        拆分交易对
+        :param pair: (str) 交易对
+        :return: (str) curr_a, (str) curr_b
+        """
+        currs = pair.split('_')
+        return currs[0].upper(), currs[1].upper()
 
     # noinspection PyMethodMayBeStatic
     def to_price_string(self, pair, price):
@@ -139,48 +150,42 @@ WHERE
         db.batch_execute(commands)
 
     # 保存订单数据
-    def save_order(self, pair, data):
+    def save_order(self, pair, order_id, order_type, amount, price, total, ts):
         """
         保存订单数据
         :param pair: (str) 交易对
-        :param data:  (dict) 单条订单数据
-        :return:  void
+        :param order_id: (int) 订单编号
+        :param order_type: (int) 订单类型(买/卖)
+        :param amount: (float) 数量
+        :param price: (float) 价格
+        :param total: (float) 总额
+        :param ts: 时间
+        :return: void
         """
-        order_id = data['orderId']
-        order_type = TRADE_SIDE_BUY if data['tradeType'] == 'buy' else TRADE_SIDE_SELL
-        amount = float(data['completedTradeAmount'])
-        price = float(data['averagePrice'])
-        total = float(data['tradePrice'])
-        ts = datetime.datetime.fromtimestamp(int(data['createdDate']) / 1000)
-        status = data['status']
-        if status == ORDER_CLOSE or status == ORDER_PART:
-            sql = '''
+        sql = '''
 INSERT INTO
-  tr_order(user_id, pair_id, order_id, order_type, amount, price, total, ts)
+tr_order(user_id, pair_id, order_id, order_type, amount, price, total, ts)
 VALUES
-  (%s, %s, %s, %s, %s, %s, %s, %s)
+(%s, %s, %s, %s, %s, %s, %s, %s)
 ON
-    CONFLICT(user_id, pair_id, order_id)
+CONFLICT(user_id, pair_id, order_id)
 DO
-    UPDATE SET amount = %s, price = %s, total = %s, ts = %s
-                '''
-            params = [self.user_id, self.pairs_id[pair], order_id,
-                      order_type, amount, price, total, ts, amount, price, total, ts]
+UPDATE SET amount = %s, price = %s, total = %s, ts = %s
+            '''
+        params = [self.user_id, self.pairs_id[pair], order_id,
+                  order_type, amount, price, total, ts, amount, price, total, ts]
+        if 0 != amount:
             db.execute(sql, params)
 
     # 保存账户余额
-    def save_balance(self, data):
+    def save_balance(self, curr, free, freezed):
         """
         保存订阅的用户余额数据
-        :param data: 余额数据
-        :return: 无
+        :param curr: (str) 币种
+        :param free: (float) 可用数量
+        :param freezed: (float) 冻结数量
+        :return:
         """
-        info_dict = data['info']
-        free_dict = info_dict['free']
-        freezed_dict = info_dict['freezed']
-        curr = list(free_dict.keys())[0].upper()
-        free = float(free_dict[curr])
-        freezed = float(freezed_dict[curr])
         total = free + freezed
         is_legal = True if curr == 'USDT' else False
 
@@ -232,59 +237,6 @@ DO
                       price_lowest, price_highest, amount, percent]
             commands.append({'sql': sql, 'params': params})
         db.batch_execute(commands)
-
-    # ------------------------------ 数据方法 ------------------------------ #
-
-    # 初始金额
-    def init_balance(self, curr):
-        """
-        获取初期余额
-        :param curr: (str) 币种
-        :return: (float) 初期余额
-        """
-        sql = 'SELECT SUM(total) AS total FROM tr_balance_init WHERE user_id = %s AND curr = %s'
-        params = [self.user_id, curr]
-        data_set = db.get_one(sql, params)
-        value = data_set['total']
-        return 0 if value is None else value
-
-    # 开盘价差
-    def open_diff_usdt(self, pair):
-        return self.tickers[pair]['last'] - self.tickers[pair]['open']
-
-    def open_diff_usdt_str(self, pair):
-        return self.to_price_string(pair, self.open_diff_usdt(pair))
-
-    # 开盘价差(%)
-    def open_diff_percent(self, pair):
-        open_value = self.tickers[pair]['open']
-        return 0 if 0 == open else self.open_diff_usdt(pair) / open_value * 100
-
-    def open_diff_percent_str(self, pair):
-        return self.to_percent_string(self.open_diff_percent(pair))
-
-    # 获取交易对周期统计数据
-    def statistics_data(self, pair, period_type):
-        # {
-        #     "trade_count"         int     成交笔数
-        #     "buy_count"           int     买单笔数
-        #     "buy_vol"             float   买单量
-        #     "sell_count"          int     卖单笔数
-        #     "sell_vol"            float   卖单量
-        #     "big_trade_count"     int     大单笔数
-        #     "big_buy_count"       int     大买单笔数
-        #     "big_buy_vol"         float   大买单量
-        #     "big_sell_count"      int     大卖单笔数
-        #     "big_sell_vol"        float   大卖单量
-        #     "inflow"              float   流入资金
-        #     "outflow"             float   流出资金
-        #     "net_inflow"          float   净流入
-        # }
-
-        sql = 'SELECT * FROM analyze_data(%s, %s, %s);'
-        params = [self.pairs_id[pair], self._get_start_time(period_type), 10000]
-        rec = db.get_one(sql, params)
-        return rec
 
     # ------------------------------ 私有方法 ------------------------------ #
 

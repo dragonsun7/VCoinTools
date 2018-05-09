@@ -12,7 +12,8 @@ database = {
 
 exchange = {
     'symbol': 'OKEx',
-    'username': '13980660107'
+    'username': '13980660107',
+    'stop_loss_ratio': 0.9
 }
 
 network = {

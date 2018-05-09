@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 
 
-class BaseController:
+class BaseController(QObject):
 
     def traverse(self, obj: QObject, callback=None):
         for child in obj.children():
@@ -34,7 +34,7 @@ class BaseController:
         obj.setStyleSheet(style)
 
     def set_label_numeric_value(self, label: QLabel, value, decimal_digits,
-                                sign_color=False, is_green=False, is_red=False, k10=False):
+                                sign_color=False, is_green=False, is_red=False):
         fmt = '%.{0}f'.format(decimal_digits)
         s = fmt % value
         label.setText(s)

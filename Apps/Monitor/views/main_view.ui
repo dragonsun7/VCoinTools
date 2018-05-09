@@ -271,19 +271,6 @@
            </property>
           </widget>
          </item>
-         <item>
-          <widget class="QPushButton" name="clear_button">
-           <property name="maximumSize">
-            <size>
-             <width>91</width>
-             <height>16777215</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>清除日志</string>
-           </property>
-          </widget>
-         </item>
         </layout>
        </item>
        <item>
@@ -1230,6 +1217,9 @@
    </layout>
   </widget>
   <widget class="QToolBar" name="toolBar">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
    <property name="windowTitle">
     <string>toolBar</string>
    </property>
@@ -1247,11 +1237,17 @@
    <addaction name="clear_log_action"/>
   </widget>
   <action name="update_deals_action">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>补全交易</string>
    </property>
   </action>
   <action name="update_kline_action">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>补全K线</string>
    </property>
@@ -1267,6 +1263,9 @@
    </property>
   </action>
   <action name="setup_action">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>设置</string>
    </property>
@@ -1283,7 +1282,6 @@
   <tabstop>del_button</tabstop>
   <tabstop>start_button</tabstop>
   <tabstop>stop_button</tabstop>
-  <tabstop>clear_button</tabstop>
   <tabstop>coin_period_combobox</tabstop>
  </tabstops>
  <resources/>

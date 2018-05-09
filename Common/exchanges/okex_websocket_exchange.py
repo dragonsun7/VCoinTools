@@ -24,6 +24,7 @@ class OKExWebsocketExchange(WebsocketExchange):
     on_order_signal = QtCore.pyqtSignal(str)  # 订单信息数据更新，参数为交易对
     on_balance_signal = QtCore.pyqtSignal()  # 余额数据更新
     on_kline_signal = QtCore.pyqtSignal(str, int)  # K线数据更新，参数：交易对、K线类型
+    on_data_signal = QtCore.pyqtSignal(str)  # 持仓/盈亏信息更新，参数：交易对
 
     def __init__(self, model: BaseModel, url, proxy_host=None, proxy_port=None, ping_interval=10, ping_timeout=5):
         WebsocketExchange.__init__(self, model.api_key, model.secret_key,
@@ -360,18 +361,36 @@ class OKExWebsocketExchange(WebsocketExchange):
 
         # 提交signal
         self.on_depth_signal.emit(pair)
+        self.on_data_signal.emit(pair)
 
     def _ws_received_deals(self, pair, data):
         self.model.save_deals(pair, data)
         self.on_deals_signal.emit(pair)
+        self.on_data_signal.emit(pair)
 
     def _ws_received_order(self, pair, data):
-        self.model.save_order(pair, data)
-        self.on_order_signal.emit(pair)
+        order_id = data['orderId']
+        order_type = TRADE_SIDE_BUY if data['tradeType'] == 'buy' else TRADE_SIDE_SELL
+        amount = float(data['completedTradeAmount'])
+        price = float(data['averagePrice'])
+        total = float(data['tradePrice'])
+        ts = datetime.datetime.fromtimestamp(int(data['createdDate']) / 1000)
+        status = data['status']
+        if status == ORDER_CLOSE or status == ORDER_PART:
+            self.model.save_order(pair, order_id, order_type, amount, price, total, ts)
+            self.on_order_signal.emit(pair)
+            self.on_data_signal.emit(pair)
 
     def _ws_received_balance(self, pair, data):
-        self.model.save_balance(data)
+        info_dict = data['info']
+        free_dict = info_dict['free']
+        freezed_dict = info_dict['freezed']
+        curr = list(free_dict.keys())[0]
+        free = float(free_dict[curr])
+        freezed = float(freezed_dict[curr])
+        self.model.save_balance(curr.upper(), free, freezed)
         self.on_balance_signal.emit()
+        self.on_data_signal.emit(pair)
 
     def _ws_received_kline(self, pair, kline_type, data):
         self.model.save_kline(pair, kline_type, data)

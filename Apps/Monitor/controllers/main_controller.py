@@ -2,14 +2,11 @@
 __author__ = 'Dragon Sun'
 
 import sys
-import datetime
-# from PyQt5.QtWidgets import *
-# from PyQt5.QtCore import *
-
 import conf as config
 from Common.base_controller import *
-from Common.models.okex_model import *
+from Common.models.monitor_model import *
 from Common.exchanges.okex_exchange import *
+from Common.exchanges.okex_thread import *
 from Apps.Monitor.views.main_view import *
 
 
@@ -18,9 +15,12 @@ class MainController(BaseController):
     def __init__(self):
         BaseController.__init__(self)
         self.timer = None
+        self.order_thread: QThread = None
+        self.order_worker = None
 
         # 创建模型对象
-        self.model = OKExModel(
+        self.model = MonitorModel(
+            stop_loss_radio=config.exchange['stop_loss_ratio'],
             exchange_symbol=config.exchange['symbol'],
             exchange_username=config.exchange['username'],
             db_host=config.database['host'],
@@ -45,8 +45,7 @@ class MainController(BaseController):
         self.exchange.on_subscribe_signal.connect(self.on_subscribe)
         self.exchange.on_all_subscribe_signal.connect(self.on_all_subscribe)
         self.exchange.on_ticker_signal.connect(self.on_ticker)
-        self.exchange.on_depth_signal.connect(self.on_depth)
-        self.exchange.on_deals_signal.connect(self.on_deals)
+        self.exchange.on_data_signal.connect(self.on_data)
 
         # 初始化界面
         self.app = QApplication(sys.argv)
@@ -68,7 +67,9 @@ class MainController(BaseController):
         self.ui.del_button.clicked.connect(self.on_remove_pair_button_click)
         self.ui.start_button.clicked.connect(self.on_start_button_click)
         self.ui.stop_button.clicked.connect(self.on_stop_button_click)
-        self.ui.clear_button.clicked.connect(self.on_clear_log_button_click)
+        self.ui.update_order_action.triggered.connect(self.on_update_order_action)
+        self.ui.update_balance_action.triggered.connect(self.on_update_balance_action)
+        self.ui.clear_log_action.triggered.connect(self.on_clear_log_action)
 
         # 初始化相关数据
         self.current_pair = ''  # 当前交易对
@@ -97,7 +98,11 @@ class MainController(BaseController):
     def on_pair_combobox_changed(self, index):
         self.current_pair = self.ui.pair_combobox.itemText(index)
         self.on_ticker(self.current_pair)
-        self.on_depth(self.current_pair)
+        self.on_data(self.current_pair)
+        self.on_timer()
+
+    def on_period_combobox_changed(self, index):
+        self.current_period = index
         self.on_timer()
 
     def on_add_pair_button_click(self):
@@ -122,32 +127,39 @@ class MainController(BaseController):
     def on_stop_button_click(self):
         self.exchange.stop_websocket()
 
-    def on_clear_log_button_click(self):
+    # ---------- 补全订单 start ---------- #
+
+    def on_update_order_action(self):
+        self.log('开始补全订单...')
+        self.order_thread = QThread()
+        self.order_worker = OKExGetOrderHistoryWorker(self.exchange, self.model)
+        self.order_worker.moveToThread(self.order_thread)
+        self.order_worker.success_signal.connect(self.on_update_order_history_success)
+        self.order_worker.failure_signal.connect(self.on_update_order_history_failure)
+        self.order_thread.started.connect(self.order_worker.work)
+        self.order_thread.start()
+
+    def on_update_order_history_success(self):
+        self.order_thread.quit()
+        self.log('补全订单成功！')
+        QMessageBox.information(self.main_window, '补全订单', '补全订单成功', QMessageBox.Ok)
+
+    def on_update_order_history_failure(self):
+        self.order_thread.quit()
+        self.log('补全订单失败！')
+        QMessageBox.warning(self.main_window, '补全订单', '补全订单失败', QMessageBox.Ok)
+
+    # ---------- 补全订单 end ---------- #
+
+    def on_update_balance_action(self):
+        result = self.exchange.update_balance()
+        if result:
+            self.log('补全余额成功！')
+        else:
+            self.log('补全余额失败！')
+
+    def on_clear_log_action(self):
         self.ui.log_edit.clear()
-
-    def on_period_combobox_changed(self, index):
-        self.current_period = index
-        self.on_timer()
-
-    def on_timer(self):
-        pair = self.current_pair
-        if pair != '':
-            d = self.model.decimals[pair]
-            data = self.model.statistics_data(pair, self.current_period)
-            if data:
-                self.set_label_numeric_value(self.ui.coin_inflow_label, data['inflow'], d, is_green=True)
-                self.set_label_numeric_value(self.ui.coin_outflow_label, data['outflow'], d, is_red=True)
-                self.set_label_numeric_value(self.ui.coin_net_inflow_label, data['net_inflow'], d, sign_color=True)
-                self.set_label_numeric_value(self.ui.coin_trade_count_label, data['trade_count'], 0)
-                self.set_label_numeric_value(self.ui.coin_buy_count_label, data['buy_count'], 0, is_green=True)
-                self.set_label_numeric_value(self.ui.coin_sell_count_label, data['sell_count'], 0, is_red=True)
-                self.set_label_numeric_value(self.ui.coin_buy_vol_label, data['buy_vol'], d, is_green=True)
-                self.set_label_numeric_value(self.ui.coin_sell_vol_label, data['sell_vol'], d, is_red=True)
-                self.set_label_numeric_value(self.ui.coin_trade_count_big_label, data['big_trade_count'], 0)
-                self.set_label_numeric_value(self.ui.coin_buy_count_big_label, data['big_buy_count'], 0, is_green=True)
-                self.set_label_numeric_value(self.ui.coin_sell_count_big_label, data['big_sell_count'], 0, is_red=True)
-                self.set_label_numeric_value(self.ui.coin_buy_vol_big_label, data['big_buy_vol'], d, is_green=True)
-                self.set_label_numeric_value(self.ui.coin_sell_vol_big_label, data['big_sell_vol'], d, is_red=True)
 
     # ------------------------------ Websocket Signal Connect ------------------------------ #
 
@@ -193,30 +205,78 @@ class MainController(BaseController):
                     self.set_label_numeric_value(self.ui.coin_open_diff_usdt_label,
                                                  self.model.open_diff_usdt(pair), self.model.decimals[pair], True)
 
-    def on_depth(self, pair):
-        # def fill_depth(qt_table, depth_list):
-        #     qt_table.setRowCount(len(depth_list))
-        #     for row, depth in enumerate(depth_list):
-        #         price = depth[0]
-        #         amount = depth[1]
-        #         item_amount = QTableWidgetItem('%.4f' % amount)
-        #         item_amount.setTextAlignment(Qt.AlignRight)
-        #         qt_table.setItem(row, 0, QTableWidgetItem('%.4f' % price))
-        #         qt_table.setItem(row, 1, item_amount)
+    def on_data(self, pair):
+        total_financial_data = self.model.cale_whole_financial_data()
+
+        # 盈亏%
+        total_profit_percent = total_financial_data['total_profit_percent']
+        total_profit_usdt = total_financial_data['total_profit_usdt']
+        total_position_percent = total_financial_data['total_position_percent']
+        total_position_usdt = total_financial_data['total_position_usdt']
+        total_settle = total_financial_data['total_settle']
+        self.set_label_numeric_value(self.ui.total_profit_percent_label, total_profit_percent, 2, sign_color=True)
+        self.set_label_numeric_value(self.ui.total_profit_usdt_label, total_profit_usdt, 4, sign_color=True)
+        self.set_label_numeric_value(self.ui.total_position_percent_label, total_position_percent, 2)
+        self.set_label_numeric_value(self.ui.total_position_usdt_label, total_position_usdt, 4)
+        self.set_label_numeric_value(self.ui.total_settle_label, total_settle, 4)
 
         if pair == self.current_pair:
-            pass
-            # asks = []
-            # bids = []
-            # if self.model.asks and (pair in self.model.asks.keys()):
-            #     asks = self.model.asks[pair]
-            # if self.model.bids and (pair in self.model.bids.keys()):
-            #     bids = self.model.bids[pair]
-            # fill_depth(self.ui.asks_table, asks)
-            # fill_depth(self.ui.bids_table, bids)
+            if pair not in self.model.financial_datas.keys():
+                return
 
-    def on_deals(self, pair):
-        pass
+            # 持仓量
+            position_amount = self.model.financial_datas[pair]['position_amount']
+            self.set_label_numeric_value(self.ui.coin_position_amount_label, position_amount, self.model.decimals[pair])
+
+            # 持仓总价
+            position_total = self.model.financial_datas[pair]['position_total']
+            self.set_label_numeric_value(self.ui.coin_position_usdt_label, position_total, 4)
+
+            # 持仓均价
+            position_avg = self.model.financial_datas[pair]['position_avg']
+            self.set_label_numeric_value(self.ui.coin_avg_label, position_avg, 4)
+
+            # 止损价
+            stop_loss_price = self.model.financial_datas[pair]['stop_loss_price']
+            self.set_label_numeric_value(self.ui.coin_stop_loss_label, stop_loss_price, 4)
+
+            # 均价价差
+            avg_diff_usdt = self.model.financial_datas[pair]['avg_diff_usdt']
+            avg_diff_percent = self.model.financial_datas[pair]['avg_diff_percent']
+            self.set_label_numeric_value(self.ui.coin_avg_diff_percent_label, avg_diff_percent, 2, sign_color=True)
+            self.set_label_numeric_value(self.ui.coin_avg_diff_usdt_label, avg_diff_usdt, 4, sign_color=True)
+
+            # 能卖出的总价
+            sell_total = self.model.financial_datas[pair]['sell_total']
+            if sell_total is None:
+                self.ui.coin_profit_percent_label.setText('市场深度不够')
+                self.ui.coin_profit_usdt_label.setText('市场深度不够')
+            else:
+                profit_usdt = self.model.financial_datas[pair]['profit_usdt']
+                profit_percent = self.model.financial_datas[pair]['profit_percent']
+                self.set_label_numeric_value(self.ui.coin_profit_percent_label, profit_percent, 2, sign_color=True)
+                self.set_label_numeric_value(self.ui.coin_profit_usdt_label, profit_usdt, 4, sign_color=True)
+
+    def on_timer(self):
+        # 显示周期数据
+        pair = self.current_pair
+        if pair != '':
+            d = self.model.decimals[pair]
+            data = self.model.statistics_data(pair, self.current_period)
+            if data:
+                self.set_label_numeric_value(self.ui.coin_inflow_label, data['inflow'], d, is_green=True)
+                self.set_label_numeric_value(self.ui.coin_outflow_label, data['outflow'], d, is_red=True)
+                self.set_label_numeric_value(self.ui.coin_net_inflow_label, data['net_inflow'], d, sign_color=True)
+                self.set_label_numeric_value(self.ui.coin_trade_count_label, data['trade_count'], 0)
+                self.set_label_numeric_value(self.ui.coin_buy_count_label, data['buy_count'], 0, is_green=True)
+                self.set_label_numeric_value(self.ui.coin_sell_count_label, data['sell_count'], 0, is_red=True)
+                self.set_label_numeric_value(self.ui.coin_buy_vol_label, data['buy_vol'], d, is_green=True)
+                self.set_label_numeric_value(self.ui.coin_sell_vol_label, data['sell_vol'], d, is_red=True)
+                self.set_label_numeric_value(self.ui.coin_trade_count_big_label, data['big_trade_count'], 0)
+                self.set_label_numeric_value(self.ui.coin_buy_count_big_label, data['big_buy_count'], 0, is_green=True)
+                self.set_label_numeric_value(self.ui.coin_sell_count_big_label, data['big_sell_count'], 0, is_red=True)
+                self.set_label_numeric_value(self.ui.coin_buy_vol_big_label, data['big_buy_vol'], d, is_green=True)
+                self.set_label_numeric_value(self.ui.coin_sell_vol_big_label, data['big_sell_vol'], d, is_red=True)
 
     # ------------------------------ private ------------------------------ #
 
