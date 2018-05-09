@@ -2,7 +2,7 @@
 __author__ = 'Dragon Sun'
 
 import sys
-import conf as config
+from Apps.Monitor import conf as config
 from Common.base_controller import *
 from Common.models.monitor_model import *
 from Common.exchanges.okex_exchange import *

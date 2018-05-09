@@ -4,8 +4,6 @@ __author__ = 'Dragon Sun'
 
 import threading
 import time
-from conf.param_conf import *
-
 
 DEPTH_STATUS_SUCCESS = 0
 DEPTH_STATUS_DISCARD = 1

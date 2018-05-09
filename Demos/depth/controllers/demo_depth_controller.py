@@ -3,11 +3,10 @@ __author__ = 'Dragon Sun'
 
 
 import sys
-import datetime
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 
-import conf as config
+from Apps.Monitor import conf as config
 from Common.models.monitor_model import *
 from Common.exchanges.okex_exchange import *
 from Demos.depth.views.demo_depth_view_main import *
