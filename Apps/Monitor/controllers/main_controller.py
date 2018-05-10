@@ -4,7 +4,7 @@ __author__ = 'Dragon Sun'
 import sys
 from Apps.Monitor import conf as config
 from Common.base_controller import *
-from Common.models.monitor_model import *
+from Apps.Monitor.model.monitor_model import *
 from Common.exchanges.okex_exchange import *
 from Common.exchanges.okex_thread import *
 from Apps.Monitor.views.main_view import *
@@ -126,6 +126,7 @@ class MainController(BaseController):
 
     def on_stop_button_click(self):
         self.exchange.stop_websocket()
+        self.log('已断开！')
 
     # ---------- 补全订单 start ---------- #
 
