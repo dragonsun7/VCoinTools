@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 
 from Apps.Monitor import conf as config
-from Common.models.monitor_model import *
+from Apps.Monitor.model.monitor_model import *
 from Common.exchanges.okex_exchange import *
 from Demos.depth.views.demo_depth_view_main import *
 
