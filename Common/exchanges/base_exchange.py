@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 __author__ = 'Dragon Sun'
 
-
+import http
+import ssl
+import urllib3
 import requests
 from Common.base_class import *
 
@@ -75,6 +77,18 @@ class BaseExchange(BaseClass):
     def request(self, method, url, params):
         proxies = self._build_proxies()
         if HTTP_METHOD_GET == method:
-            return requests.get(url, params, proxies=proxies).json()
+            try:
+                return requests.get(url, params, proxies=proxies).json()
+            except (
+                    ssl.SSLEOFError, requests.exceptions.SSLError, urllib3.exceptions.MaxRetryError,
+                    http.client.RemoteDisconnected, requests.exceptions.ProxyError
+            ):
+                return None
         else:
-            return requests.post(url, params, proxies=proxies).json()
+            try:
+                return requests.post(url, params, proxies=proxies).json()
+            except (
+                    ssl.SSLEOFError, requests.exceptions.SSLError, urllib3.exceptions.MaxRetryError,
+                    http.client.RemoteDisconnected, requests.exceptions.ProxyError
+            ):
+                return None

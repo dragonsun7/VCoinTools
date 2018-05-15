@@ -26,6 +26,20 @@ class OKExWebsocketExchange(WebsocketExchange):
     on_kline_signal = QtCore.pyqtSignal(str, int)  # K线数据更新，参数：交易对、K线类型
     on_data_signal = QtCore.pyqtSignal(str)  # 持仓/盈亏信息更新，参数：交易对
 
+    # {
+    #     'pair': (str) 交易对
+    #     'order_id': (int) 订单ID
+    #     'order_type': (int) 交易类型
+    #     'amount': (float) 数量
+    #     'price': (float) 单价
+    #     'total': (float) 总价
+    #     'ts': (timestamp) 时间
+    # }
+    on_order_recall_signal = QtCore.pyqtSignal(object)  # 撤销订单
+    on_order_open_signal = QtCore.pyqtSignal(object)  # 挂订单
+    on_order_part_signal = QtCore.pyqtSignal(object)  # 订单部分成交
+    on_order_close_signal = QtCore.pyqtSignal(object)  # 订单完成
+
     def __init__(self, model: BaseModel, url, proxy_host=None, proxy_port=None, ping_interval=10, ping_timeout=5):
         WebsocketExchange.__init__(self, model.api_key, model.secret_key,
                                    url, proxy_host, proxy_port, ping_interval, ping_timeout)
@@ -376,6 +390,25 @@ class OKExWebsocketExchange(WebsocketExchange):
         total = float(data['tradePrice'])
         ts = datetime.datetime.fromtimestamp(int(data['createdDate']) / 1000)
         status = data['status']
+
+        data_dict = {
+            'pair': pair,
+            'order_id': order_id,
+            'order_type': order_type,
+            'amount': amount,
+            'price': price,
+            'total': total,
+            'ts': ts
+        }
+        if status == ORDER_RECALL:
+            self.on_order_recall_signal.emit(data_dict)
+        if status == ORDER_OPEN:
+            self.on_order_open_signal.emit(data_dict)
+        if status == ORDER_PART:
+            self.on_order_part_signal.emit(data_dict)
+        if status == ORDER_CLOSE:
+            self.on_order_close_signal.emit(data_dict)
+
         if status == ORDER_CLOSE or status == ORDER_PART:
             self.model.save_order(pair, order_id, order_type, amount, price, total, ts)
             self.on_order_signal.emit(pair)

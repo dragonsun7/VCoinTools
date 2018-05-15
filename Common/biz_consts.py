@@ -11,6 +11,7 @@ ORDER_RECALL = -1  # 撤销
 ORDER_OPEN = 0  # 未成交
 ORDER_PART = 1  # 部分成交
 ORDER_CLOSE = 2  # 已成交
+ORDER_RECALLING = 3  # 撤单中
 
 # K线类型
 KLINE_TYPE_MIN01 = 0

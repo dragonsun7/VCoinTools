@@ -45,7 +45,7 @@ class MainController(BaseController):
         self.exchange.on_subscribe_signal.connect(self.on_subscribe)
         self.exchange.on_all_subscribe_signal.connect(self.on_all_subscribe)
         self.exchange.on_ticker_signal.connect(self.on_ticker)
-        self.exchange.on_data_signal.connect(self.on_data)
+        # self.exchange.on_data_signal.connect(self.on_data)
 
         # 初始化界面
         self.app = QApplication(sys.argv)
@@ -262,6 +262,8 @@ class MainController(BaseController):
         # 显示周期数据
         pair = self.current_pair
         if pair != '':
+            self.on_data(pair)
+
             d = self.model.decimals[pair]
             data = self.model.statistics_data(pair, self.current_period)
             if data:

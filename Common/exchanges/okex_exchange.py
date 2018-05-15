@@ -27,6 +27,33 @@ class OKExExchange(OKExWebsocketExchange):
         bids = sorted(json_obj['bids'], reverse=True)
         return asks, bids
 
+    # 币币交易-1 获取用户余额
+    def update_balance(self):
+        """
+        获取用户余额信息
+        :return: (bool) 是否成功
+        """
+        url = 'https://www.okex.com/api/v1/userinfo.do'
+        params = {
+            'api_key': self.api_key
+        }
+        params['sign'] = self._build_sign(params)
+        json_obj = self.request(HTTP_METHOD_POST, url, params)
+        result = json_obj['result']
+        if not result:
+            return False
+
+        info_dict = json_obj['info']
+        funds_dict = info_dict['funds']
+        free_dict = funds_dict['free']
+        freezed_dict = funds_dict['freezed']
+        for curr in free_dict.keys():
+            free = float(free_dict[curr])
+            freezed = float(freezed_dict[curr])
+            self.model.save_balance(curr.upper(), free, freezed)
+        return True
+
+    # 币币交易-2 下单
     def place_order(self, pair, trade_side, price, amount):
         url = 'https://www.okex.com/api/v1/trade.do'
         params = {
@@ -38,23 +65,17 @@ class OKExExchange(OKExWebsocketExchange):
         }
         params['sign'] = self._build_sign(params)
         json_obj = self.request(HTTP_METHOD_POST, url, params)
-        result = json_obj['result']
-        order_id = json_obj['order_id'] if result else -1
-        err_code = 0 if result else json_obj['error_code']
-        err_msg = ''  # TODO
-        return result, order_id, err_code, err_msg
 
-    def cancel_order(self, pair, order_id):
-        url = 'https://www.okex.com/api/v1/cancel_order.do'
-        params = {
-            'api_key': self.api_key,
-            'symbol': pair.lower(),
-            'order_id': order_id
-        }
-        params['sign'] = self._build_sign(params)
-        json_obj = self.request(HTTP_METHOD_POST, url, params)
-        return json_obj['result']
+        if json_obj is None:
+            return -1
+        if 'result' in json_obj.keys():
+            result = json_obj['result']
+            if result:
+                return json_obj['order_id']
+        else:
+            return -1
 
+    # 币币交易-3 批量下单
     def batch_place_order(self, trade_infos):
         # TODO 测试
         """
@@ -77,6 +98,24 @@ class OKExExchange(OKExWebsocketExchange):
                 orders_id.append(order_info['order_id'])
         return result, order_info
 
+    # 币币交易-4-1 撤销订单
+    def cancel_order(self, pair, order_id):
+        url = 'https://www.okex.com/api/v1/cancel_order.do'
+        params = {
+            'api_key': self.api_key,
+            'symbol': pair.lower(),
+            'order_id': order_id
+        }
+        params['sign'] = self._build_sign(params)
+        json_obj = self.request(HTTP_METHOD_POST, url, params)
+        if json_obj is None:
+            return False
+        if 'result' in json_obj.keys():
+            return json_obj['result']
+        else:
+            return False
+
+    # 币币交易-4-2 批量撤销订单
     def batch_cancel_order(self, orders_id):
         # TODO 测试
         """
@@ -95,6 +134,67 @@ class OKExExchange(OKExWebsocketExchange):
         json_obj = self.request(HTTP_METHOD_POST, url, params)
         return json_obj['success'], json_obj['error']
 
+    # 币币交易-5 获取订单信息
+    def get_order_info(self, pair, order_id):
+        """
+        获取订单信息 (访问频率 20次/2秒)
+        :param pair: (str) 交易对
+        :param order_id: (int) 订单ID，如果为-1则查询未完成订单
+        :return: (list) 每个元素是个dict, None(如果出错)
+        [
+            {
+                "amount": 0.1,                  委托数量
+                "avg_price": 0,                 成交均价
+                "create_date": 1418008467000,   委托时间
+                "deal_amount": 0,               成交数量
+                "order_id": 10000591,           订单ID
+                "orders_id": 10000591,          (不使用)
+                "price": 500,                   委托价格
+                "status": 0,                    订单状态(-1:已撤销  0:未成交  1:部分成交  2:完全成交 3:撤单处理中)
+                "symbol": "btc_usd",            交易对
+                "type": "sell"                  交易类型(buy_market:市价买入 / sell_market:市价卖出 / buy / sell)
+            }
+        ]
+        """
+        url = 'https://www.okex.com/api/v1/order_info.do'
+        params = {
+            'api_key': self.api_key,
+            'symbol': pair.lower(),
+            'order_id': order_id
+        }
+        params['sign'] = self._build_sign(params)
+        json_obj = self.request(HTTP_METHOD_POST, url, params)
+        if json_obj is None:
+            return None
+        result = json_obj['result']
+        if not result:
+            return None
+        return json_obj['orders']
+
+    # 币币交易-6 批量获取订单信息
+    def get_batch_order_info(self, query_type, pair, orders_id):
+        """
+        批量获取订单信息 (访问频率 20次/2秒)
+        :param query_type: (int) 查询类型 0:未完成的订单 1:已经完成的订单
+        :param pair: (str) 交易对
+        :param orders_id: (list) 订单ID
+        :return: (list) 同get_order_info
+        """
+        url = 'https://www.okex.com/api/v1/orders_info.do'
+        params = {
+            'api_key': self.api_key,
+            'symbol': pair.lower(),
+            'type': query_type,
+            'order_id': ','.join(orders_id)
+        }
+        params['sign'] = self._build_sign(params)
+        json_obj = self.request(HTTP_METHOD_POST, url, params)
+        result = json_obj['result']
+        if not result:
+            return None
+        return json_obj['orders']
+
+    # 币币交易-7 获取历史订单信息
     def get_order_history(self, pair, page=1):
         """
         获取历史订单信息，只返回最近两天的信息
@@ -134,31 +234,6 @@ class OKExExchange(OKExWebsocketExchange):
             return self.get_order_history(pair, page + 1)
         else:
             return True
-
-    def update_balance(self):
-        """
-        获取用户余额信息
-        :return: (bool) 是否成功
-        """
-        url = 'https://www.okex.com/api/v1/userinfo.do'
-        params = {
-            'api_key': self.api_key
-        }
-        params['sign'] = self._build_sign(params)
-        json_obj = self.request(HTTP_METHOD_POST, url, params)
-        result = json_obj['result']
-        if not result:
-            return False
-
-        info_dict = json_obj['info']
-        funds_dict = info_dict['funds']
-        free_dict = funds_dict['free']
-        freezed_dict = funds_dict['freezed']
-        for curr in free_dict.keys():
-            free = float(free_dict[curr])
-            freezed = float(freezed_dict[curr])
-            self.model.save_balance(curr.upper(), free, freezed)
-        return True
 
     # ---------------------------------------- 私有方法 ---------------------------------------- #
 

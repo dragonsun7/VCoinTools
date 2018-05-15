@@ -135,6 +135,9 @@
        </widget>
       </item>
       <item>
+       <widget class="QPlainTextEdit" name="log_edit"/>
+      </item>
+      <item>
        <layout class="QHBoxLayout" name="horizontalLayout_3">
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_2">
