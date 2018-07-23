@@ -73,3 +73,18 @@ DO
             order['price'], order['total'], order['ts'], order['buy_order_id']
         ]
         db.execute(sql, params)
+
+    # 获取市场深度数据(价一，则level传0， 依次类推)
+    def hft_get_depth(self, pair, trade_side, level):
+        ret = None
+        all_depth = self.bids if TRADE_SIDE_BUY == trade_side else self.asks
+        if pair in all_depth.keys():
+            depth = all_depth[pair]
+            if len(depth) > level:
+                ret = depth[level]
+        return ret
+
+    # 将服务器返回的type转换为trade_side
+    # noinspection PyMethodMayBeStatic
+    def hft_to_trade_side(self, json_trade_type):
+        return TRADE_SIDE_BUY if 'buy' == json_trade_type else TRADE_SIDE_SELL

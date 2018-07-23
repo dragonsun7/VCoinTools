@@ -78,7 +78,11 @@ class BaseExchange(BaseClass):
         proxies = self._build_proxies()
         if HTTP_METHOD_GET == method:
             try:
-                return requests.get(url, params, proxies=proxies).json()
+                ret = requests.get(url, params, proxies=proxies)
+                if ret is None:
+                    return {}
+                else:
+                    return ret.json()
             except (
                     ssl.SSLEOFError, requests.exceptions.SSLError, urllib3.exceptions.MaxRetryError,
                     http.client.RemoteDisconnected, requests.exceptions.ProxyError
@@ -86,7 +90,11 @@ class BaseExchange(BaseClass):
                 return None
         else:
             try:
-                return requests.post(url, params, proxies=proxies).json()
+                ret = requests.post(url, params, proxies=proxies)
+                if ret is None:
+                    return {}
+                else:
+                    return ret.json()
             except (
                     ssl.SSLEOFError, requests.exceptions.SSLError, urllib3.exceptions.MaxRetryError,
                     http.client.RemoteDisconnected, requests.exceptions.ProxyError
