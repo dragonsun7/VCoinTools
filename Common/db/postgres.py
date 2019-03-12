@@ -10,7 +10,7 @@ _cursor = None
 def init_singleton(host, port, user, password, database):
     """
     初始化数据库对象(单例)
-    使用数据库钱需要先调用一次该方法
+    使用数据库前需要先调用一次该方法
     """
     global _conn
     global _cursor
